@@ -1,0 +1,87 @@
+import React, { useEffect, useState } from 'react';
+
+export default function SetupWizard() {
+  const [status, setStatus] = useState(null);
+  const [log, setLog] = useState('');
+  const [entityId, setEntityId] = useState(1);
+  const [grant, setGrant] = useState(100000);
+
+  const append = (t) => setLog(l => (l ? l + '\n' : '') + t);
+
+  async function loadStatus() {
+    const r = await fetch('/api/doctor');
+    const d = await r.json().catch(()=>null);
+    setStatus(d);
+  }
+
+  async function runRepair() {
+    const r = await fetch('/api/doctor', { method:'POST' });
+    append('Auto-Fix: ' + (await r.text()));
+    await loadStatus();
+  }
+
+  async function seedCatalog() {
+    const r = await fetch('/api/catalog', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'seed' })
+    });
+    append('Seed Catalog: ' + (await r.text()));
+    await loadStatus();
+  }
+
+  async function giveSC() {
+    const r = await fetch('/api/balances', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ entityId: Number(entityId), currency:'SC', delta: Number(grant) })
+    });
+    append('Grant SC: ' + (await r.text()));
+  }
+
+  async function runAgent() {
+    const r = await fetch('/api/agent?action=run', { method:'POST' });
+    append('Agent run: ' + (await r.text()).slice(0,300) + ' ...');
+  }
+
+  async function showTreasury() {
+    const r = await fetch('/api/treasury');
+    append('Treasury: ' + (await r.text()));
+  }
+
+  useEffect(() => { loadStatus(); }, []);
+
+  return (
+    <div style={{background:'#151d2b',border:'1px solid #263145',borderRadius:14,padding:16,marginBottom:16}}>
+      <h2 style={{marginTop:0}}>Autonomous Setup Wizard</h2>
+      <div style={{display:'flex',flexWrap:'wrap',gap:8,alignItems:'center'}}>
+        <button onClick={runRepair}>🛠️ Run Auto-Fix</button>
+        <button onClick={seedCatalog}>🪐 Seed Catalog</button>
+        <button onClick={showTreasury}>🏦 Show Treasury</button>
+        <div style={{marginLeft:'auto', color:'#9fb0c8'}}>
+          {status ? `Treasury:${status.treasury?'✓':'×'} • Catalog:${status.catalog?'✓':'×'} • Entities:${status.entitiesCount} • Bal#1:${status.hasBalance1?'✓':'×'}` : '—'}
+        </div>
+      </div>
+
+      <div style={{marginTop:12, display:'flex', gap:8, alignItems:'center', flexWrap:'wrap'}}>
+        <label>Entity&nbsp;<input type="number" value={entityId} onChange={e=>setEntityId(e.target.value)} style={{width:90,padding:6}}/></label>
+        <label>Grant SC&nbsp;<input type="number" value={grant} onChange={e=>setGrant(e.target.value)} style={{width:130,padding:6}}/></label>
+        <button onClick={giveSC}>➕ Credit SC</button>
+        <button onClick={runAgent}>🤖 Run Agent Cycle</button>
+      </div>
+
+      <div style={{marginTop:12}}>
+        <Card title="Log">
+          <pre style={{whiteSpace:'pre-wrap', margin:0, maxHeight:220, overflow:'auto'}}>{log || '—'}</pre>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function Card({ title, children }) {
+  return (
+    <div style={{background:'#0f1622',border:'1px solid #263145',borderRadius:12,padding:12}}>
+      <h3 style={{marginTop:0}}>{title}</h3>
+      {children}
+    </div>
+  );
+}
