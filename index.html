@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧠 Mycelium City Real Jobs Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #0ff;
+      text-align: center;
+    }
+    #stats, #districtsContainer, #updateArea, #influenceMap {
+      background: #222;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 800px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h2 {
+      color: #9ec9ff;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 Mycelium City Real Jobs Dashboard</h1>
+
+  <div id="stats">
+    <p>Total USD Earnings: $<span id="totalUSD">0</span></p>
+  </div>
+
+  <div id="districtsContainer">
+    <h2>Districts</h2>
+    <p>(dynamic content will load here)</p>
+  </div>
+
+  <div id="updateArea">
+    <h2>Update Nodes</h2>
+    <p>(admin update tools here)</p>
+  </div>
+
+  <div id="influenceMap">
+    <h2>Influence Map</h2>
+    <p>(map visualization here)</p>
+  </div>
+
+  <script>
+    // Example starter script
+    let totalUSD = 0;
+    document.getElementById("totalUSD").innerText = totalUSD;
+
+    // You can expand this with fetch() calls to Netlify Functions later
+    console.log("Mycelium City Dashboard loaded.");
+  </script>
+</body>
+</html>
