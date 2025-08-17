@@ -1,0 +1,36 @@
+const { blobGet, blobSet } = require('./_blob');
+
+async function getStatus() {
+  const data = await blobGet('status', { active: true, lastChecked: Date.now() });
+  return data;
+}
+
+async function updateStatus(newStatus) {
+  await blobSet('status', newStatus);
+  return newStatus;
+}
+
+exports.handler = async function (event) {
+  try {
+    const action = event.queryStringParameters?.action;
+
+    if (action === 'checkStatus') {
+      const status = await getStatus();
+      return { statusCode: 200, body: JSON.stringify(status) };
+    }
+
+    if (action === 'runCycle') {
+      const status = await getStatus();
+      status.lastChecked = Date.now();
+      await updateStatus(status);
+
+      // Autonomous tasks like catalog seeding, entity updates, balance management, etc.
+      // Add custom tasks here
+      return { statusCode: 200, body: JSON.stringify({ message: "Cycle complete." }) };
+    }
+
+    return { statusCode: 400, body: 'Unknown action' };
+  } catch (e) {
+    return { statusCode: 500, body: 'Error: ' + e.message };
+  }
+};
