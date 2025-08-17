@@ -14,3 +14,17 @@ export default function App() {
     </div>
   );
 }
+import React from 'react';
+import DevControlPanel from './components/DevControlPanel';
+import AssetShopGalaxy from './components/AssetShopGalaxy';
+
+export default function App() {
+  const demoEntityId = 1;
+  return (
+    <div style={{ padding: '2rem', maxWidth: 1100, margin: '0 auto', fontFamily: 'Arial' }}>
+      <h1>🧠 Mycelium City – President Dashboard</h1>
+      <DevControlPanel />
+      <AssetShopGalaxy entityId={demoEntityId} />
+    </div>
+  );
+}
