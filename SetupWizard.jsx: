@@ -1,0 +1,46 @@
+import React, { useState, useEffect } from 'react';
+
+export default function SetupWizard() {
+  const [status, setStatus] = useState(null);
+  const [log, setLog] = useState('');
+
+  const append = (message) => setLog((prev) => `${prev}\n${message}`);
+
+  async function getStatus() {
+    const response = await fetch('/api/agent?action=checkStatus');
+    const data = await response.json();
+    setStatus(data);
+  }
+
+  async function repairSystem() {
+    const response = await fetch('/api/doctor?action=repair');
+    const data = await response.json();
+    append(data.message);
+    await getStatus();
+  }
+
+  async function runCycle() {
+    const response = await fetch('/api/agent?action=runCycle');
+    const data = await response.json();
+    append(data.message);
+    await getStatus();
+  }
+
+  useEffect(() => {
+    getStatus();
+  }, []);
+
+  return (
+    <div style={{ padding: '20px', background: '#f4f4f4', borderRadius: '8px' }}>
+      <h2>Autonomous Agent Dashboard</h2>
+      <div>
+        <button onClick={repairSystem}>Repair System</button>
+        <button onClick={runCycle}>Run Agent Cycle</button>
+      </div>
+      <h3>Status</h3>
+      <pre>{JSON.stringify(status, null, 2)}</pre>
+      <h3>Logs</h3>
+      <pre>{log}</pre>
+    </div>
+  );
+}
